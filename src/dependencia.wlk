@@ -4,7 +4,13 @@ import vehiculos.*
 class Dependencia {
 	const vehiculos = []
 	const empleados = []
-
+	const listaPedidos = []
+	method agregarPedido(pedido){
+		return listaPedidos.add(pedido)
+	}
+	method quitarPedido(pedido){
+		return listaPedidos.remove(pedido)
+	}
     method agregarEmpleado(empleado){
         return empleados.add(empleado)
     }
@@ -43,6 +49,18 @@ class Dependencia {
 	method esGrande(){
 		return self.cantidadDeEmpleados() >= 40 and vehiculos.size() >= 5 
 	}
+	method totalDePasajerosEnPedidos(){
+		return listaPedidos.sum({p=>p.cantidadPasajeros()})
+	}
+	method vehiculosPuedenSatisfacerElPedido(){
+		return listaPedidos.filter({pedido=> vehiculos.all({vehiculo =>not pedido.puedeSatisfacerPedido(vehiculo)})})
+	}
+	method esColorIncompatible(unColor){
+		return listaPedidos.all({p=>p.coloresIncompatibles() == unColor})
+	}
+	method relajarPedidos(){
+		return listaPedidos.forEach({p=>p.relajar()})
+	}
 }
 
 class Empleados{
@@ -52,7 +70,7 @@ class Pedidos{
 	var property kms
 	var property horas
 	var property cantPasajeros
-	const coloresIncompatibles = #{}
+	var property coloresIncompatibles = #{}
 	method agregarColoresIncompatibles(color){
 		return coloresIncompatibles.add(color)
 	}
@@ -61,8 +79,10 @@ class Pedidos{
 	}
 	method puedeSatisfacerPedido(auto){
 		return 
-		auto.velMax() >= ( 10 + self.velRequerida() ) 
+		auto.velocidadMaxima() >= (self.velRequerida()+10)
 		and auto.capacidad() >= cantPasajeros 
-		and auto.color() != coloresIncompatibles
+		and not coloresIncompatibles.contains(auto.color())
 	}
+	method relajar(){}
+	
 }
